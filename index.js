@@ -2,11 +2,14 @@ import express, { json } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import categoriesRouter from "./routes/categoriesRouter.js";
+dotenv.config();
 const app = express();
 
 app.use(cors());
 app.use(json());
-dotenv.config();
+
+app.use(categoriesRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
