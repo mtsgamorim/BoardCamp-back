@@ -20,11 +20,37 @@ export async function addRental(req, res) {
   }
 }
 
+export async function updateRental(req, res) {
+  const id = parseInt(req.params.id);
+  const today = dayjs().format("YYYY/MM/DD");
+  let delayFee = 0;
+  try {
+    const { rows: rental } = await connection.query(
+      `SELECT * FROM rentals WHERE id = $1`,
+      [id]
+    );
+    const diffInDay = dayjs(today).diff(rental[0].rentDate, "day");
+    const delay = diffInDay - rental[0].daysRented;
+    console.log(delay);
+    if (delay > 0) {
+      console.log("entrei aqui");
+      const price = rental[0].originalPrice / rental[0].daysRented;
+      delayFee = delay * price;
+    }
+    await connection.query(
+      `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3`,
+      [today, delayFee, id]
+    );
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+}
+
 export async function getRental(req, res) {
   const queryCustomerId = parseInt(req.query.customerId);
   const queryGameId = parseInt(req.query.gameId);
-  console.log(queryCustomerId);
-  console.log(queryGameId);
   const response = [];
   try {
     if (
@@ -43,7 +69,7 @@ export async function getRental(req, res) {
           daysRented: rental[i].daysRented,
           returnDate: rental[i].returnDate,
           originalPrice: rental[i].originalPrice,
-          delayFee: rental[i].originalPrice,
+          delayFee: rental[i].delayFee,
           customer: {
             id: rental[i].customerID,
             name: rental[i].customerName,
@@ -113,7 +139,6 @@ export async function getRental(req, res) {
     }
     res.send(response);
   } catch (error) {
-    console.log(error);
     res.status(500).send();
   }
 }

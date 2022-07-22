@@ -1,7 +1,7 @@
 import joi from "joi";
 import connection from "../dbStrategy/postgres.js";
 
-async function validateRentals(req, res, next) {
+export async function validateRentals(req, res, next) {
   const rentals = req.body;
   const rentalsSchema = joi.object({
     customerId: joi.number().required(),
@@ -45,4 +45,24 @@ async function validateRentals(req, res, next) {
   next();
 }
 
-export default validateRentals;
+export async function validateReturn(req, res, next) {
+  const id = parseInt(req.params.id);
+  try {
+    const { rows: rental } = await connection.query(
+      `SELECT * FROM rentals WHERE id = $1`,
+      [id]
+    );
+    if (rental.length === 0) {
+      res.status(404).send();
+      return;
+    }
+    if (rental[0].returnDate !== null) {
+      res.status(400).send();
+      return;
+    }
+  } catch (error) {
+    res.status(500).send();
+    return;
+  }
+  next();
+}
