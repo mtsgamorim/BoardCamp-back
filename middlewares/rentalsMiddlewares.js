@@ -66,3 +66,25 @@ export async function validateReturn(req, res, next) {
   }
   next();
 }
+
+export async function validateDelete(req, res, next) {
+  const id = parseInt(req.params.id);
+  try {
+    const { rows: rental } = await connection.query(
+      `SELECT * FROM rentals WHERE id = $1`,
+      [id]
+    );
+    if (rental.length === 0) {
+      res.status(404).send();
+      return;
+    }
+    if (rental[0].returnDate === null) {
+      res.status(400).send();
+      return;
+    }
+  } catch (error) {
+    res.status(500).send();
+    return;
+  }
+  next();
+}

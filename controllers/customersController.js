@@ -45,7 +45,7 @@ export async function getCustomersByID(req, res) {
       res.status(404).send();
       return;
     }
-    res.send(customer);
+    res.send(customer[0]);
   } catch (error) {
     res.status(500).send();
   }

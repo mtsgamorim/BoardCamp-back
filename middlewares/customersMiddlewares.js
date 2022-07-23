@@ -25,8 +25,8 @@ export async function validateCustomers(req, res, next) {
     res.status(400).send();
     return;
   }
-
-  const dateIsValid = dayjs(customer.birthday, "YYYY-MM-DD", true).isValid();
+  const dataTest = customer.birthday;
+  const dateIsValid = dayjs(dataTest, "YYYY-MM-DD", true).isValid();
   if (!dateIsValid) {
     res.status(400).send();
     return;
@@ -69,8 +69,8 @@ export async function validateCustomers2(req, res, next) {
     res.status(400).send();
     return;
   }
-
-  const dateIsValid = dayjs(customer.birthday, "YYYY-MM-DD", true).isValid();
+  const testDate = customer.birthday?.replace("T03:00:00.000Z", "");
+  const dateIsValid = dayjs(testDate, "YYYY-MM-DD", true).isValid();
   if (!dateIsValid) {
     res.status(400).send();
     return;

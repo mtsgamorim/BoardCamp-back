@@ -31,9 +31,7 @@ export async function updateRental(req, res) {
     );
     const diffInDay = dayjs(today).diff(rental[0].rentDate, "day");
     const delay = diffInDay - rental[0].daysRented;
-    console.log(delay);
     if (delay > 0) {
-      console.log("entrei aqui");
       const price = rental[0].originalPrice / rental[0].daysRented;
       delayFee = delay * price;
     }
@@ -43,7 +41,16 @@ export async function updateRental(req, res) {
     );
     res.status(200).send();
   } catch (error) {
-    console.log(error);
+    res.status(500).send();
+  }
+}
+
+export async function deleteRental(req, res) {
+  const id = parseInt(req.params.id);
+  try {
+    await connection.query(`DELETE FROM rentals WHERE id = $1`, [id]);
+    res.status(200).send();
+  } catch (error) {
     res.status(500).send();
   }
 }

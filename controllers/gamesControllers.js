@@ -34,7 +34,6 @@ export async function addGame(req, res) {
     ]);
     res.status(201).send();
   } catch (error) {
-    console.log(error);
     res.status(500).send();
   }
 }
